@@ -1,0 +1,12 @@
+{
+  "name": "pokedex-suprema",
+  "version": "1.0.0",
+  "description": "Pokédex Suprema com roletas elementais",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
