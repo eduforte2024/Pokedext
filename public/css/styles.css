@@ -1,0 +1,50 @@
+:root {
+    --bg-main: #13131a;
+    --bg-card: #1c1c24;
+    --primary: #ef5350;
+    --accent: #f1c40f;
+    --text: #ffffff;
+    --text-muted: #a0a0b5;
+}
+body {
+    margin: 0; font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-main); color: var(--text);
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding-bottom: 90px; transition: background-color 0.4s;
+}
+header {
+    background: linear-gradient(135deg, #1f1f2e, #13131a); width: 100%; padding: 18px 0;
+    text-align: center; font-size: 22px; font-weight: 800; border-bottom: 2px solid var(--primary);
+}
+.container { padding: 20px; width: 95%; max-width: 480px; box-sizing: border-box; }
+.hidden { display: none !important; }
+.search-container { display: flex; gap: 10px; margin-bottom: 25px; }
+input { flex: 1; padding: 12px 15px; border-radius: 10px; border: 2px solid #2c2c38; background: #1c1c24; color: white; }
+button { padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; }
+.btn-primary { background-color: var(--primary); color: white; }
+.btn-accent { background-color: var(--accent); color: #13131a; }
+.btn-random { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; width: 100%; margin-bottom: 20px; padding: 15px; }
+.btn-clear { background-color: #e74c3c; color: white; margin-bottom: 15px; width: 100%; }
+.zone-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.btn-zone { padding: 25px 15px; color: white; border-radius: 15px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.navigation-controls { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+.btn-nav { flex: 1; background-color: #2c2c38; color: white; border: 1px solid #3e3e52; }
+.card { background-color: var(--bg-card); padding: 25px; border-radius: 20px; text-align: center; margin-top: 10px; }
+.animated-image { width: 160px; height: 160px; animation: bounceIn 1s ease; }
+@keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.poke-name { font-size: 26px; font-weight: bold; margin: 15px 0 5px 0; }
+.poke-info { font-size: 16px; opacity: 0.9; margin: 5px 0; }
+.pokemon-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.poke-mini-card { background-color: var(--bg-card); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; }
+.poke-mini-card img { width: 80px; height: 80px; }
+.list-box { background-color: var(--bg-card); padding: 15px; border-radius: 12px; max-height: 300px; overflow-y: auto; }
+.log-item { background-color: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid var(--accent); text-align: left; }
+.fav-item { background-color: var(--bg-card); padding: 12px; border-radius: 12px; margin-bottom: 12px; display: flex; align-items: center; }
+.fav-avatar { width: 65px; height: 65px; }
+.fav-info { flex: 1; margin-left: 12px; text-align: left; }
+.fav-name { font-weight: bold; font-size: 16px; }
+.fav-nickname { color: var(--accent); font-size: 14px; }
+.tab-bar { position: fixed; bottom: 0; width: 100%; background-color: #1c1c24; display: flex; justify-content: space-around; padding: 12px 0; }
+.tab-button { background: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.tab-button.active { color: var(--primary); font-weight: bold; }
+.loading { text-align: center; color: var(--accent); font-weight: bold; margin: 20px; }
