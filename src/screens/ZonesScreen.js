@@ -1,70 +1,58 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Image, Animated, TouchableOpacity, Alert } from 'react-native';
+import { db } from '../config/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
-export default function ZonesScreen() {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
+export default function DetailsScreen({ route, navigation }) {
+  const { pokemon } = route.params;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const fetchZonePokemon = async (targetType) => {
-    setLoading(true);
-    setResult(null);
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  const handleFavorite = async () => {
     try {
-      const response = await fetch(`https://pokeapi.co/api/v2/type/${targetType}`);
-      const typeData = await response.json();
-      const rawList = typeData.pokemon;
-
-      let attempts = 0;
-      let found = false;
-      let data = null;
-
-      while (attempts < 15 && !found) {
-        attempts++;
-        const randomIndex = Math.floor(Math.random() * rawList.length);
-        const resDetails = await fetch(rawList[randomIndex].pokemon.url);
-        data = await resDetails.json();
-        if (data.types && data.types[0].type.name === targetType) found = true;
-      }
-
-      setResult(data);
-    } catch (error) {
-      Alert.alert("Erro", "Erro ao buscar no habitat.");
-    } finally {
-      setLoading(false);
+      await addDoc(collection(db, "favorites"), {
+        pokeId: pokemon.id,
+        name: pokemon.name,
+        type: pokemon.types[0].type.name,
+        imageUrl: pokemon.sprites.other['official-artwork'].front_default
+      });
+      Alert.alert('Sucesso', `${pokemon.name} salvo com sucesso no Firestore!`);
+      navigation.navigate('Favorites');
+    } catch (e) {
+      console.error("Erro ao salvar documento: ", e);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitle}>Sorteie um Pokémon exclusivo pelo seu habitat elemental puro!</Text>
-      
-      <View style={styles.grid}>
-        <TouchableOpacity style={[styles.btnZone, { backgroundColor: '#ff5e62' }]} onPress={() => fetchZonePokemon('fire')}><Text style={styles.textZone}>🔥 Fogo</Text></TouchableOpacity>
-        <TouchableOpacity style={[styles.btnZone, { backgroundColor: '#2193b0' }]} onPress={() => fetchZonePokemon('water')}><Text style={styles.textZone}>💧 Água</Text></TouchableOpacity>
-        <TouchableOpacity style={[styles.btnZone, { backgroundColor: '#11998e' }]} onPress={() => fetchZonePokemon('grass')}><Text style={styles.textZone}>🌿 Grama</Text></TouchableOpacity>
-        <TouchableOpacity style={[styles.btnZone, { backgroundColor: '#f39c12' }]} onPress={() => fetchZonePokemon('electric')}><Text style={styles.textZone}>⚡ Elétrico</Text></TouchableOpacity>
-      </View>
+      <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
+        <Image source={{ uri: pokemon.sprites.other['official-artwork'].front_default }} style={styles.image} />
+        <Text style={styles.title}>{pokemon.name.toUpperCase()}</Text>
+        <Text style={styles.text}>ID: {pokemon.id}</Text>
+        <Text style={styles.text}>Tipo Principal: {pokemon.types[0].type.name}</Text>
+        <Text style={styles.text}>Peso: {pokemon.weight / 10} kg</Text>
 
-      {loading && <ActivityIndicator size="large" color="#f1c40f" style={{ marginTop: 30 }} />}
-
-      {result && !loading && (
-        <View style={styles.resultCard}>
-          <Image source={{ uri: result.sprites.front_default }} style={styles.img} />
-          <Text style={styles.resultName}>{result.name.toUpperCase()}</Text>
-          <Text style={styles.resultType}>Tipo Principal Seguro: {result.types[0].type.name.toUpperCase()}</Text>
-        </View>
-      )}
+        <TouchableOpacity style={styles.favButton} onPress={handleFavorite}>
+          <Text style={styles.buttonText}>Adicionar aos Favoritos (Firebase)</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#13131a', padding: 20, alignItems: 'center' },
-  subtitle: { color: '#a0a0b5', textAlign: 'center', marginBottom: 20, fontSize: 14 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 15, justifyContent: 'center', width: '100%' },
-  btnZone: { width: '45%', padding: 20, borderRadius: 15, alignItems: 'center' },
-  textZone: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  resultCard: { backgroundColor: '#1c1c24', marginTop: 30, width: '100%', padding: 20, borderRadius: 15, alignItems: 'center', borderColor: '#2c2c38', borderWidth: 1 },
-  img: { width: 120, height: 120 },
-  resultName: { color: 'white', fontSize: 20, fontWeight: 'bold', marginVertical: 5 },
-  resultType: { color: '#2ecc71', fontSize: 14, fontWeight: 'bold' }
+  container: { flex: 1, backgroundColor: '#12121a', padding: 20, justifyContent: 'center' },
+  card: { backgroundColor: '#1a1a2e', borderRadius: 20, padding: 30, alignItems: 'center' },
+  image: { width: 200, height: 200 },
+  title: { color: '#fff', fontSize: 26, fontWeight: 'bold', marginVertical: 10 },
+  text: { color: '#ccc', fontSize: 16, marginBottom: 5 },
+  favButton: { backgroundColor: '#2ecc71', padding: 15, borderRadius: 10, marginTop: 20, width: '100%', alignItems: 'center' },
+  buttonText: { color: '#fff', fontWeight: 'bold' }
 });
